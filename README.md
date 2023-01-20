@@ -28,5 +28,5 @@ Within this GPO, an administrator supplies a path to the default application ass
 * It applies only to a new user's *first* login.
 * It applies only to users who login to a domain joined device.  
 
-Yet another snag is the fact that GPOs are not simply enabled and configured through PowerShell. However, GPOs ultimately are just APIs which control registry values. Microsoft has provided a document which lists all available GPOs and the registry values that underpin them. 
+Yet another snag is the fact that GPOs are not simply enabled and configured through PowerShell. However, GPOs ultimately are just APIs which control registry values. Microsoft has provided a [document](https://www.microsoft.com/en-us/download/details.aspx?id=25250) which lists all available GPOs and the registry values that underpin them. 
 
