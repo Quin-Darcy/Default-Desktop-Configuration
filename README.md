@@ -35,5 +35,7 @@ Yet another snag is the fact that GPOs are not simply enabled and configured thr
 `HKLM:\Software\Policies\Microsoft\Windows\System`  
 and the key created is  
 `DefaultAssociationsConfiguration`  
-which is of type string and holds the file path to the application association xml file. Note: When the GPO is not configured or disabled, the `System` folder does not exist. 
+which is of type string and holds the file path to the application association xml file. Note: When the GPO is not configured or is disabled, the `System` folder does not exist.  
+The function responsible for making the necessary changes in the registry is called `set_default_appassoc()`. It takes one argument, `appassoc_path`, which is the file location the XML is saved to. 
+
 
