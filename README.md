@@ -57,4 +57,15 @@ There are two other functions which make changes in the HKLM. `disable_cortana` 
 The part of this program which makes a change to the CurrentUser Hive is done by dropping a script and having that script be run at first login. The function `drop_taskbar_cleanup_script` stores the actual script (which disables the Taskview button, News and events, Cortana Button, and Taskbar animations) in a string, then saves that string to a `.ps1` file located at `$script_path`.
 
 ### HKCU - Taskbar Cleanup - Run Once
+The remaining actions we must take on the Taskbar do not have GPOs in the Computer Configuration section in the same way that the previous changes did. The remaining actions can only be applied on the user level. For this applicaiton, we want the changes to apply to new users by the time they login.  
+In order to make it so this program need only be run once by an administrator, it performs the following steps:
+1. Drop the taskbar cleanup script in the Win32 folder.
+2. Load Defaul User Registry Hive
+3. Create String value containing path to the Taskbar cleanup script and add it to  
+`HKU:\NEW_USER\Software\Microsoft\Windows\CurrentVersion\Runonce`
+
+When a new user is created and logs in for the first time, this script should run and the changes it makes will be applied the next time the user logs in. 
+
+### Cleanup
+Both the main code and dropped script contain lines at their end which forces them to delete themselves after execution. 
 
