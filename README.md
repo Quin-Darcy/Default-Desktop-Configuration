@@ -4,6 +4,9 @@ decorative elements on the taskbar.
 
 ## How it Works
 ---
+### HKLM Functions and HKCU Functions
+The script can be broken down into two parts - The functions which make changes to the HKLM Hive and the functions which make changes to the HKCU Hive. The latter functions perform the same registry actions as a few GPOs located in the Computer Configuration tab. The functions which make changes to the HKCU are bundled into a seperate script and run at first login. 
+
 ### Taskbar Layout - File Creation
 The taskbar layout dictates the shortcuts which are pinned to the taskbar and this layout is defined by XML file. Within this program, the function responsible for creating the XML file is called `create_taskbar_layout`. It takes one argument, `$taskbar_path` which is the file location that the final XML file will be saved to. The function starts by generating the default `StartLayout.xml` which is the layout found in the Start window. This is accomplished by running   
 `Export-StartLayout -UseDesktopApplicationID -Path $taskbar_path`  
@@ -31,12 +34,15 @@ The way around this is to use the following GPO:
 Within this GPO, an administrator supplies a path to the default application association XML file. There are two important conditions which must be met for this GPO to apply
 * It applies only to a new user's *first* login.
 * It applies only to users who login to a domain joined device.  
-
 Yet another snag is the fact that GPOs are not simply enabled and configured through PowerShell. However, GPOs ultimately are just APIs which control registry values. Microsoft has provided a [document](https://www.microsoft.com/en-us/download/details.aspx?id=25250) which lists all available GPOs and the registry values that underpin them. This presents an opening to how we can automate the default application. The registry key for the GPO is:  
 `HKLM:\Software\Policies\Microsoft\Windows\System`  
 and the key created is  
 `DefaultAssociationsConfiguration`  
 which is of type string and holds the file path to the application association xml file. Note: When the GPO is not configured or is disabled, the `System` folder does not exist.  
-The function responsible for making the necessary changes in the registry is called `set_default_appassoc()`. It takes one argument, `appassoc_path`, which is the file location the XML is saved to. 
+The function responsible for making the necessary changes in the registry is called `set_default_appassoc()`. It takes one argument, `appassoc_path`, which is the file location the XML is saved to. The function creates the nessary keys and values in the HKLM and sets those values.
 
+### Disable Cortana and Search Highlights
+There are two other functions which make changes in the HKLM. `disable_cortana` and `disable_search_highlights`. The two following functions perform the same actions as the two following GPOs 
+* Computer Configuration > Administrative Templates > Windows Componenets > Search > Addlow Cortana
+* Computer Configuration > Administrative Templates > Windows Componenets > Search > Allow Search Highlights 
 
