@@ -31,6 +31,7 @@ The way around this is to use the following GPO:
 Within this GPO, an administrator supplies a path to the default application association XML file. There are two important conditions which must be met for this GPO to apply
 * It applies only to a new user's *first* login.
 * It applies only to users who login to a domain joined device.  
+
 Yet another snag is the fact that GPOs are not simply enabled and configured through PowerShell. However, GPOs ultimately are just APIs which control registry values. Microsoft has provided a [document](https://www.microsoft.com/en-us/download/details.aspx?id=25250) which lists all available GPOs and the registry values that underpin them. This presents an opening to how we can automate the default application. The registry key for the GPO is:  
 `HKLM:\Software\Policies\Microsoft\Windows\System`  
 and the key created is  
