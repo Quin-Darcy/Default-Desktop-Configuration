@@ -5,7 +5,7 @@ decorative elements on the taskbar.
 ## How it Works
 ---
 ### HKLM Functions and HKCU Functions
-The script can be broken down into two parts - The functions which make changes to the HKLM Hive and the functions which make changes to the HKCU Hive. The latter functions perform the same registry actions as a few GPOs located in the Computer Configuration tab. The functions which make changes to the HKCU are bundled into a seperate script and run at first login. 
+The script can be broken down into two parts - The functions which make changes to the HKLM and the functions which make changes to the HKCU. The latter functions perform the same registry actions as a few GPOs located in the Computer Configuration tab. The functions which make changes to the HKCU are bundled into a seperate script and run at first login. 
 
 ### HKLM - Taskbar Layout - File Creation
 The taskbar layout dictates the shortcuts which are pinned to the taskbar and this layout is defined by XML file. Within this program, the function responsible for creating the XML file is called `create_taskbar_layout`. It takes one argument, `$taskbar_path` which is the file location that the final XML file will be saved to. The function starts by generating the default `StartLayout.xml` which is the layout found in the Start window. This is accomplished by running   
@@ -51,5 +51,10 @@ The function responsible for making the necessary changes in the registry is cal
 ### HKLM - Disable Cortana and Search Highlights
 There are two other functions which make changes in the HKLM. `disable_cortana` and `disable_search_highlights`. The two following functions perform the same actions as the two following GPOs 
 * Computer Configuration > Administrative Templates > Windows Componenets > Search > Addlow Cortana
-* Computer Configuration > Administrative Templates > Windows Componenets > Search > Allow Search Highlights 
+* Computer Configuration > Administrative Templates > Windows Componenets > Search > Allow Search Highlights  
+
+### HKCU - Taskbar Cleanup - Script Drop
+The part of this program which makes a change to the CurrentUser Hive is done by dropping a script and having that script be run at first login. The function `drop_taskbar_cleanup_script` stores the actual script (which disables the Taskview button, News and events, Cortana Button, and Taskbar animations) in a string, then saves that string to a `.ps1` file located at `$script_path`.
+
+### HKCU - Taskbar Cleanup - Run Once
 
