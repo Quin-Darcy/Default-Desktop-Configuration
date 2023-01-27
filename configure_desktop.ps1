@@ -6,6 +6,7 @@ $dalps = @("%APPDATA%\Microsoft\Windows\Start Menu\Programs\System Tools\File Ex
             "%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs\Outlook.lnk",  
             "%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs\Google Chomre.lnk")
 
+# Function responsible for generating the start/taskbar layout XML file
 function create_taskbar_layout($taskbar_path) {
     # This line generates the current Start Menu layout XML file 
     # The file is saved to the location specified in $taskbar_path
@@ -47,6 +48,7 @@ function create_taskbar_layout($taskbar_path) {
     $layout.save($taskbar_path) 
 }
 
+# Function responsible for generating the default application association XML file
 function create_default_appassoc($appassocs_path) {
     # This line generates the current deffault application associations XML file 
     # The file is saved to the location specified in $taskbar_path
@@ -60,7 +62,7 @@ function create_default_appassoc($appassocs_path) {
     $assoc_nodes = $appassocs.DefaultAssociations.Association
     
     # Iterate through all nodes
-    # Set association by node's Identifier attribute (i.e., file ext)
+    # Set association by node's Identifier attribute (i.e., file extension)
     foreach($node in $assoc_nodes) {
         if ($node.Identifier -eq ".htm") {
             $node.SetAttribute("ProgId", "ChromeHTML")
@@ -91,6 +93,7 @@ function create_default_appassoc($appassocs_path) {
     $appassocs.save($appassocs_path) 
 }
 
+# Utility function for creating a registry key given a key path
 function create_regkey($reg_path) {
     if (-Not (Test-Path -Path $reg_path)) {
         Write-Output("Creating Registry Key: "+$reg_path)
@@ -98,6 +101,7 @@ function create_regkey($reg_path) {
     }
 }
 
+# Utility function for creating a registry value given a key path, value name, value type, and value
 function create_regvalue($reg_path, $reg_name, $reg_type, $reg_value) {
     if ((Get-ItemProperty $reg_path).PSObject.Properties.Name -Contains $reg_name) {
         Write-Output("Creating Registry value: "+($reg_path+"\"+$reg_name))
@@ -109,9 +113,8 @@ function create_regvalue($reg_path, $reg_name, $reg_type, $reg_value) {
     Write-Output("    Value set: "+$reg_value+" "+"("+$reg_type+")")
 }
 
+# function which changes the registry values corresponding to the taskbar layout
 function set_taskbar_layout($taskbar_path) {
-    # This function changes the same registry values involved with 
-    # the GPO which controls taskbar layout
     $reg_path = "HKLM:\Software\Policies\Microsoft\Windows\Explorer"
     $reg_name1 = "LockedStartLayout"
     $reg_type1 = "DWord"
@@ -125,6 +128,7 @@ function set_taskbar_layout($taskbar_path) {
     create_regvalue $reg_path $reg_name2 $reg_type2 $reg_value2
 }
 
+# Function which changes registry values corresponding to the default application associations
 function set_default_appassoc($appassoc_path) {
     # This changes the registry values corresponding to the default application associations
     $reg_path = "HKLM:\Software\Policies\Microsoft\Windows\System"
@@ -136,6 +140,7 @@ function set_default_appassoc($appassoc_path) {
     create_regvalue $reg_path $reg_name $reg_type $reg_value
 }
 
+# Stand-alone function for changing the keys in HKLM relating to Cortana
 function disable_cortana {
     # To simulate the effect of disabling the Allow Cortana GPO
     # We first create the Windows Search folder, then add the
@@ -149,6 +154,7 @@ function disable_cortana {
     create_regvalue $reg_path $reg_name $reg_type $reg_value
 }
 
+# Stand-alone function for changing the keys in HKLM relating to Taskbar dynamic content
 function disable_search_highlights {
     # This will disable the graphics which appear in the search bar
     $reg_path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"
@@ -160,6 +166,8 @@ function disable_search_highlights {
     create_regvalue $reg_path $reg_name $reg_type $reg_value
 }
 
+# Function which loads default hive and sets the RunOnce value 
+# This function is needed to assure script runs at new users's first login
 function setup_runonce_script($script_path) {
     # Load default User Registry Hive to HKLM\NEW_USER
     $reg_path = "HKU:\NEW_USER\Software\Microsoft\Windows\CurrentVersion\Runonce"
@@ -179,6 +187,7 @@ function setup_runonce_script($script_path) {
     Remove-PSDrive -Name HKU
 }
 
+# Caller function which calls the two XML generator functions
 function create_xmls($taskbar_path, $appassoc_path) {
     # From this function we call the functions responsible for 
     # generating the default taskbar layout XML file and the
@@ -187,6 +196,7 @@ function create_xmls($taskbar_path, $appassoc_path) {
     create_default_appassoc($appassoc_path)
 }
 
+# Caller function which calls the HKLM modifier functions
 function modify_HKLM_registry($taskbar_path, $appassoc_path) {
     Write-Output("Exporting Registry Keys...")
     # Define registry keys to export before change
@@ -203,6 +213,8 @@ function modify_HKLM_registry($taskbar_path, $appassoc_path) {
     disable_search_highlights
 }
 
+# HKCU script which is to be run at new user's first login is created here
+# Entire script is stored as a String and written to a file then saved to $script_path
 function drop_taskbar_cleanup_script($script_path) {
     $script_text = 'function taskbar_cleanup {
     # This function disables the Taskview Button, Taskbar Animations, Cortana Button, and News/Interests
