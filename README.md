@@ -50,7 +50,7 @@ The function responsible for making the necessary changes in the registry is cal
 
 ### HKLM - Disable Cortana and Search Highlights
 There are two other functions which make changes in the HKLM. `disable_cortana` and `disable_search_highlights`. The two following functions perform the same actions as the two following GPOs 
-* Computer Configuration > Administrative Templates > Windows Componenets > Search > Addlow Cortana
+* Computer Configuration > Administrative Templates > Windows Componenets > Search > Allow Cortana
 * Computer Configuration > Administrative Templates > Windows Componenets > Search > Allow Search Highlights  
 
 ### HKCU - Taskbar Cleanup - Script Drop
