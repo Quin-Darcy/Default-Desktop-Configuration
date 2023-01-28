@@ -113,7 +113,7 @@ function create_regvalue($reg_path, $reg_name, $reg_type, $reg_value) {
     Write-Output("    Value set: "+$reg_value+" "+"("+$reg_type+")")
 }
 
-# function which changes the registry values corresponding to the taskbar layout
+# Function which changes the registry values corresponding to the taskbar layout
 function set_taskbar_layout($taskbar_path) {
     $reg_path = "HKLM:\Software\Policies\Microsoft\Windows\Explorer"
     $reg_name1 = "LockedStartLayout"
