@@ -57,7 +57,6 @@ function create_default_appassoc($appassocs_path)
     # The file is saved to the location specified in $taskbar_path
     dism /online /Export-DefaultAppAssociations:$appassocs_path | Out-Null
     
-    
     # We create an XML object out of the file we just created
     [xml]$appassocs = Get-Content -Path $appassocs_path
 
