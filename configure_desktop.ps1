@@ -55,6 +55,7 @@ function create_default_appassoc($appassocs_path)
 {
     # This line generates the current deffault application associations XML file 
     # The file is saved to the location specified in $taskbar_path
+    # Note: The /online flag indicates that DISM is to execute against a running computer
     dism /online /Export-DefaultAppAssociations:$appassocs_path | Out-Null
     
     # We create an XML object out of the file we just created
