@@ -105,6 +105,7 @@ function create_default_appassoc($appassocs_path)
 # Utility function for creating a registry key given a key path
 function create_regkey($reg_path) 
 {
+    # If key path does not exist, create it
     if (-Not (Test-Path -Path $reg_path)) 
     {
         Write-Output("Creating Registry Key: "+$reg_path)
@@ -115,6 +116,7 @@ function create_regkey($reg_path)
 # Utility function for creating a registry value given a key path, value name, value type, and value
 function create_regvalue($reg_path, $reg_name, $reg_type, $reg_value) 
 {
+    # If value does not exist create and set it, otherwise just set it
     if ((Get-ItemProperty $reg_path).PSObject.Properties.Name -Contains $reg_name) 
     {
         Write-Output("Creating Registry value: "+($reg_path+"\"+$reg_name))
@@ -195,8 +197,10 @@ function setup_runonce_script($script_path)
     $reg_type = "String"
     $reg_value = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe $script_path"
 
+    # Create temporary drive named HKU which is mapped to HKEY_USERS
     New-PSDrive -PSProvider Registry -Name HKU -Root HKEY_USERS
 
+    # Load the default user NTUSER.DAT file into the HKU\NEW_USER key
     REG LOAD HKU\NEW_USER "C:\Users\Default\NTUSER.DAT"
 
     create_regkey($reg_path)
