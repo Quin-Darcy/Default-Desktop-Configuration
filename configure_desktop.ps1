@@ -206,6 +206,9 @@ function setup_runonce_script($script_path)
     create_regkey($reg_path)
     create_regvalue $reg_path $reg_name $reg_type $reg_value
 
+    # Garbage collect to free any unused memory
+    # Unload key
+    # Unmap drive
     [gc]::Collect()
     REG UNLOAD HKU\NEW_USER
     Remove-PSDrive -Name HKU
