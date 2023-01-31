@@ -7,7 +7,8 @@ $dalps = @("%APPDATA%\Microsoft\Windows\Start Menu\Programs\System Tools\File Ex
             "%PROGRAMDATA%\Microsoft\Windows\Start Menu\Programs\Google Chomre.lnk")
 
 # Function responsible for generating the start/taskbar layout XML file
-function create_taskbar_layout($taskbar_path) {
+function create_taskbar_layout($taskbar_path) 
+{
     # This line generates the current Start Menu layout XML file 
     # The file is saved to the location specified in $taskbar_path
     Export-StartLayout -UseDesktopApplicationID -Path $taskbar_path
@@ -37,7 +38,8 @@ function create_taskbar_layout($taskbar_path) {
     $tbxml_layer3 = $layout.CreateElement("taskbar:TaskbarPinList",  $nsm.LookupNamespace("taskbar"))
     
     # We loop through each of the application link paths and create new nodes out of them
-    foreach($dalp in $dalps) {
+    foreach($dalp in $dalps) 
+    {
         $app_node = $layout.CreateElement("taskbar:DesktopApp",  $nsm.LookupNamespace("taskbar"))
         $app_node.SetAttribute("DesktopApplicationLinkPath", $dalp)
         $tbxml_layer3.AppendChild($app_node)
@@ -49,7 +51,8 @@ function create_taskbar_layout($taskbar_path) {
 }
 
 # Function responsible for generating the default application association XML file
-function create_default_appassoc($appassocs_path) {
+function create_default_appassoc($appassocs_path) 
+{
     # This line generates the current deffault application associations XML file 
     # The file is saved to the location specified in $taskbar_path
     dism /online /Export-DefaultAppAssociations:$appassocs_path | Out-Null
@@ -63,50 +66,62 @@ function create_default_appassoc($appassocs_path) {
     
     # Iterate through all nodes
     # Set association by node's Identifier attribute (i.e., file extension)
-    foreach($node in $assoc_nodes) {
-        if ($node.Identifier -eq ".htm") {
+    foreach($node in $assoc_nodes) 
+    {
+        if ($node.Identifier -eq ".htm") 
+        {
             $node.SetAttribute("ProgId", "ChromeHTML")
             $node.SetAttribute("ApplicationName", "Google Chrome")
         }
-        if ($node.Identifier -eq ".html") {
+        if ($node.Identifier -eq ".html") 
+        {
             $node.SetAttribute("ProgId", "ChromeHTML")
             $node.SetAttribute("ApplicationName", "Google Chrome")
         }
-        if ($node.Identifier -eq ".pdf") {
+        if ($node.Identifier -eq ".pdf") 
+        {
             $node.SetAttribute("ProgId", "Acrobat.Document.DC")
             $node.SetAttribute("ApplicationName", "Adobe Acrobat")
         }
-        if ($node.Identifier -eq "http") {
+        if ($node.Identifier -eq "http") 
+        {
             $node.SetAttribute("ProgId", "ChromeHTML")
             $node.SetAttribute("ApplicationName", "Google Chrome")
         }
-        if ($node.Identifier -eq "https") {
+        if ($node.Identifier -eq "https") 
+        {
             $node.SetAttribute("ProgId", "ChromeHTML")
             $node.SetAttribute("ApplicationName", "Google Chrome")
         }
-        if ($node.Identifier -eq "mailto") {
+        if ($node.Identifier -eq "mailto") 
+        {
             $node.SetAttribute("ProgId", "Outlook.URL.mailto.15")
             $node.SetAttribute("ApplicationName", "Outlook")
         }
     }
-
     $appassocs.save($appassocs_path) 
 }
 
 # Utility function for creating a registry key given a key path
-function create_regkey($reg_path) {
-    if (-Not (Test-Path -Path $reg_path)) {
+function create_regkey($reg_path) 
+{
+    if (-Not (Test-Path -Path $reg_path)) 
+    {
         Write-Output("Creating Registry Key: "+$reg_path)
         New-Item -Path $reg_path -Force
     }
 }
 
 # Utility function for creating a registry value given a key path, value name, value type, and value
-function create_regvalue($reg_path, $reg_name, $reg_type, $reg_value) {
-    if ((Get-ItemProperty $reg_path).PSObject.Properties.Name -Contains $reg_name) {
+function create_regvalue($reg_path, $reg_name, $reg_type, $reg_value) 
+{
+    if ((Get-ItemProperty $reg_path).PSObject.Properties.Name -Contains $reg_name) 
+    {
         Write-Output("Creating Registry value: "+($reg_path+"\"+$reg_name))
         Set-ItemProperty -Path $reg_path -Name $reg_name -Value $reg_value -Force
-    } else {
+    } 
+    else 
+    {
         Write-Output("Creating Registry value: "+($reg_path+"\"+$reg_name))
         New-ItemProperty -Path $reg_path -Name $reg_name -PropertyType $reg_type -Value $reg_value
     }
@@ -114,7 +129,8 @@ function create_regvalue($reg_path, $reg_name, $reg_type, $reg_value) {
 }
 
 # Function which changes the registry values corresponding to the taskbar layout
-function set_taskbar_layout($taskbar_path) {
+function set_taskbar_layout($taskbar_path) 
+{
     $reg_path = "HKLM:\Software\Policies\Microsoft\Windows\Explorer"
     $reg_name1 = "LockedStartLayout"
     $reg_type1 = "DWord"
@@ -129,7 +145,8 @@ function set_taskbar_layout($taskbar_path) {
 }
 
 # Function which changes registry values corresponding to the default application associations
-function set_default_appassoc($appassoc_path) {
+function set_default_appassoc($appassoc_path) 
+{
     # This changes the registry values corresponding to the default application associations
     $reg_path = "HKLM:\Software\Policies\Microsoft\Windows\System"
     $reg_name = "DefaultAssociationsConfiguration"
@@ -141,7 +158,8 @@ function set_default_appassoc($appassoc_path) {
 }
 
 # Stand-alone function for changing the keys in HKLM relating to Cortana
-function disable_cortana {
+function disable_cortana 
+{
     # To simulate the effect of disabling the Allow Cortana GPO
     # We first create the Windows Search folder, then add the
     # AllowCortana value with DWORD 0
@@ -155,7 +173,8 @@ function disable_cortana {
 }
 
 # Stand-alone function for changing the keys in HKLM relating to Taskbar dynamic content
-function disable_search_highlights {
+function disable_search_highlights 
+{
     # This will disable the graphics which appear in the search bar
     $reg_path = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\Windows Search"
     $reg_name = "EnableDynamicContentInWSB"
@@ -168,7 +187,8 @@ function disable_search_highlights {
 
 # Function which loads default hive and sets the RunOnce value 
 # This function is needed to assure script runs at new users's first login
-function setup_runonce_script($script_path) {
+function setup_runonce_script($script_path) 
+{
     # Load default User Registry Hive to HKLM\NEW_USER
     $reg_path = "HKU:\NEW_USER\Software\Microsoft\Windows\CurrentVersion\Runonce"
     $reg_name = "Script"
@@ -188,7 +208,8 @@ function setup_runonce_script($script_path) {
 }
 
 # Caller function which calls the two XML generator functions
-function create_xmls($taskbar_path, $appassoc_path) {
+function create_xmls($taskbar_path, $appassoc_path) 
+{
     # From this function we call the functions responsible for 
     # generating the default taskbar layout XML file and the
     # default application association XML file
@@ -197,7 +218,8 @@ function create_xmls($taskbar_path, $appassoc_path) {
 }
 
 # Caller function which calls the HKLM modifier functions
-function modify_HKLM_registry($taskbar_path, $appassoc_path) {
+function modify_HKLM_registry($taskbar_path, $appassoc_path) 
+{
     Write-Output("Exporting Registry Keys...")
     # Define registry keys to export before change
     $reg_key = "HKLM\Software\Policies\Microsoft\Windows"
@@ -215,7 +237,8 @@ function modify_HKLM_registry($taskbar_path, $appassoc_path) {
 
 # HKCU script which is to be run at new user's first login is created here
 # Entire script is stored as a String and written to a file then saved to $script_path
-function drop_taskbar_cleanup_script($script_path) {
+function drop_taskbar_cleanup_script($script_path) 
+{
     $script_text = 'function taskbar_cleanup {
     # This function disables the Taskview Button, Taskbar Animations, Cortana Button, and News/Interests
     $reg_paths = @("HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced", 
@@ -229,16 +252,21 @@ function drop_taskbar_cleanup_script($script_path) {
     $reg_types = @("DWord", "DWord", "DWord", "DWord")
     $reg_values = @(0, 0, 0, 2)
 
-    for(($i = 0); $i -lt $reg_names.length; $i++) {
-        if (-Not (Test-Path -Path $reg_paths[$i])) {
+    for(($i = 0); $i -lt $reg_names.length; $i++) 
+    {
+        if (-Not (Test-Path -Path $reg_paths[$i])) 
+        {
             Write-Output("Creating Registry Key: "+$reg_paths[$i])
             New-Item -Path $reg_paths[$i] -Force | Out-Null
         }
 
-        if ((Get-ItemProperty $reg_paths[$i]).PSObject.Properties.Name -Contains $reg_names[$i]) {
+        if ((Get-ItemProperty $reg_paths[$i]).PSObject.Properties.Name -Contains $reg_names[$i]) 
+        {
             Write-Output("Creating Registry value: "+($reg_paths[$i]+"\"+$reg_names[$i]))
             Set-ItemProperty -Path $reg_paths[$i] -Name $reg_names[$i] -Value $reg_values[$i] -Force | Out-Null
-        } else {
+        } 
+        else 
+        {
             Write-Output("Creating Registry value: "+($reg_paths[$i]+"\"+$reg_names[$i]))
             New-ItemProperty -Path $reg_paths[$i] -Name $reg_names[$i] -PropertyType $reg_types[$i] -Value $reg_values[$i] | Out-Null
         }
@@ -251,10 +279,10 @@ taskbar_cleanup
 # Delete thyself
 Remove-Item -fo $PSCommandPath'
 
-    if (-Not (Test-Path -Path $script_path)) {
+    if (-Not (Test-Path -Path $script_path)) 
+    {
         New-Item -Path $script_path
     }
-
     Set-Content $script_path $script_text
 }
 
